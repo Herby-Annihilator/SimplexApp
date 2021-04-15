@@ -7,7 +7,146 @@
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}">
-    <Grid>
+    <Window.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="CanUserSortColumns" Value="False"/>
+            <Setter Property="AlternatingRowBackground" Value="DarkSalmon"/>
+            <Setter Property="GridLinesVisibility" Value="Vertical"/>
+            <Setter Property="Margin" Value="5,0"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Файл"/>
+            <MenuItem Header="Помощь"/>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Content="Binding"/>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <Grid Margin="5">
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <Trigger Property="Grid.Column" Value="2">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="Margin" Value="5,0"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition MinHeight="150"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="183*"/>
+                        <ColumnDefinition Width="69*" />
+                        <ColumnDefinition Width="137*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Таблица с коэффициентами при переменных" TextWrapping="Wrap" />
+                    <DataGrid Grid.Row="1" Grid.Column="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Width="30" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Коэффициенты" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Text="Знак" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <DataGrid Grid.Row="1" Grid.Column="1">
+                        <DataGrid.Columns>
+                            <DataGridComboBoxColumn Header="Знак" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" Text="Правые части уравнений"/>
+                    <DataGrid Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*" Header="Правые части">
+                                <DataGridColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    </Style>
+                                </DataGridColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <StackPanel Margin="15,0,0,0">
 
-    </Grid>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Text="Функция цели" Margin="5,0"/>
+                    <DockPanel Margin="5,0">
+                        <TextBox MinWidth="300" Margin="0,0,5,0"/>
+                        <TextBlock Text="→" Margin="5,0" Width="15"/>
+                        <ComboBox MinWidth="50" HorizontalAlignment="Right">
+                            <ComboBoxItem Content="Max"/>
+                            <ComboBoxItem Content="Min"/>
+                        </ComboBox>
+                    </DockPanel>
+                </StackPanel>
+                <WrapPanel Orientation="Horizontal" Margin="5,10">
+                    <WrapPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Margin" Value="3"/>
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Button Content="Добавить уравнение"/>
+                    <Button Content="Удалить выделенное уравнение"/>
+                </WrapPanel>
+            </StackPanel>
+            <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" ShowsPreview="False"
+                          HorizontalAlignment="Center"/>
+            <GroupBox Grid.Column="2" Header="Результаты">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0">
+                            <TextBlock TextWrapping="Wrap" Text="Оптимальное значение функции = " Margin="5,0"/>
+                            <TextBlock Text="Binding" Margin="5,0"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Которое достигается при следующих значениях базисных переменных" TextWrapping="Wrap"
+                                   Margin="5, 5"/>
+                                <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" MinHeight="70" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Имя переменной"/>
+                                        <DataGridTextColumn Header="Значение" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock TextWrapping="Wrap" Text="При этом свободные переменные имеют следующие значения"
+                                   Margin="5,5"/>
+                                <DataGrid MinHeight="70">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Имя переменной"/>
+                                        <DataGridTextColumn Header="Значение" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+            </GroupBox>
+        </Grid>
+    </DockPanel>
 </Window>
