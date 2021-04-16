@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyLibrary\MyLibrary.csproj" />
+    <ProjectReference Include="D:\GarbageCan\Projects\VisualStudio\Semester_5\Algorithms\MyLibrary\MyLibrary.csproj" />
   </ItemGroup>
 
 </Project>
