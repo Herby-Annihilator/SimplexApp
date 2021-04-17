@@ -9,6 +9,7 @@ namespace SimplexApp.Model.Services
 	{
 		public static void RegisterServices(this IServiceCollection services)
 		{
+			services.AddTransient<StringToDoubleArrayParser>();
 			return;
 		}
 	}

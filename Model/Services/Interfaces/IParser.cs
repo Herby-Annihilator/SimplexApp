@@ -4,7 +4,8 @@ using System.Text;
 
 namespace SimplexApp.Model.Services.Interfaces
 {
-	class IParser
+	public interface IParser<TInput, TResult>
 	{
+		TResult Parse(TInput input);
 	}
 }
