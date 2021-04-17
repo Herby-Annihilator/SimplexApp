@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:SimplexApp.Infrastructure.Converters"
         xmlns:local="clr-namespace:SimplexApp"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800"
@@ -49,12 +50,24 @@
                         <TextBlock Grid.Column="1" TextWrapping="Wrap" Margin="5,0" Text="В поле 'знак' выберите знак неравенства/равенства"/>
                         <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="5,0" Text="В колонке 'Правая часть' введите правую часть равенства/неравенства"/>
                     </Grid>
-                    <DataGrid Grid.Row="1" MinHeight="70" Margin="5">
+                    <DataGrid Grid.Row="1" Height="200" Margin="5" ItemsSource="{Binding Equations}" VerticalScrollBarVisibility="Auto"
+                              SelectedItem="{Binding SelectedEquation, Mode=TwoWay}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="№" Width="25"/>
-                            <DataGridTextColumn Header="Коэффициенты" MinWidth="230"/>
-                            <DataGridComboBoxColumn Header="Знак" Width="35"/>
-                            <DataGridTextColumn Header="Правая часть" Width="*"/>
+                            <DataGridTextColumn Header="№" Width="25" Binding="{Binding ID}"/>
+                            <DataGridTextColumn Header="Коэффициенты" MinWidth="200" Binding="{Binding Coefficients}"/>
+                            <DataGridComboBoxColumn Header="Знак" Width="60" SelectedItemBinding="{Binding SelectedSign}">
+                                <DataGridComboBoxColumn.ElementStyle>
+                                    <Style TargetType="{x:Type ComboBox}">
+                                        <Setter Property="ItemsSource" Value="{Binding Signs}" />
+                                    </Style>
+                                </DataGridComboBoxColumn.ElementStyle>
+                                <DataGridComboBoxColumn.EditingElementStyle>
+                                    <Style TargetType="{x:Type ComboBox}">
+                                        <Setter Property="ItemsSource" Value="{Binding Signs}" />
+                                    </Style>
+                                </DataGridComboBoxColumn.EditingElementStyle>
+                            </DataGridComboBoxColumn>
+                            <DataGridTextColumn Header="Правая часть" Width="*" Binding="{Binding RightPart, Converter={converters:DoubleToStringConverter}, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -67,8 +80,8 @@
                     <TextBlock TextWrapping="Wrap" Text="Функция цели" Margin="5,0"/>
                     <DockPanel Margin="5,0">
                         <TextBox MinWidth="300" Margin="0,0,5,0"/>
-                        <TextBlock Text="→" Margin="5,0" Width="15"/>
-                        <ComboBox MinWidth="50" HorizontalAlignment="Right">
+                        <TextBlock Text="→" Margin="5,0,0,0" Width="15"/>
+                        <ComboBox MinWidth="50" HorizontalAlignment="Right" SelectedIndex="0">
                             <ComboBoxItem Content="Max"/>
                             <ComboBoxItem Content="Min"/>
                         </ComboBox>
@@ -80,8 +93,8 @@
                             <Setter Property="Margin" Value="3"/>
                         </Style>
                     </WrapPanel.Resources>
-                    <Button Content="Добавить уравнение"/>
-                    <Button Content="Удалить уравнение"/>
+                    <Button Content="Добавить уравнение" Command="{Binding AddNewEquationCommand}"/>
+                    <Button Content="Удалить уравнение" Command="{Binding DeleteSelectedEquationCommand}"/>
                     <Button Content="Решить задачу" Margin="20,3"/>
                 </WrapPanel>
             </StackPanel>
@@ -102,26 +115,26 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <TextBlock Text="Которое достигается при следующих значениях базисных переменных" TextWrapping="Wrap"
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Которое достигается при следующих значениях базисных переменных" TextWrapping="Wrap"
                                    Margin="5, 5"/>
-                            <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" MinHeight="70" IsReadOnly="True">
+                            <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" MinHeight="70" IsReadOnly="True" ItemsSource="{Binding BasisVariables}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Имя переменной"/>
-                                    <DataGridTextColumn Header="Значение" Width="*"/>
+                                    <DataGridTextColumn Header="Имя переменной" Binding="{Binding Path=Name}"/>
+                                    <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Value}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <TextBlock TextWrapping="Wrap" Text="При этом свободные переменные имеют следующие значения"
+                        </DockPanel>
+                        <DockPanel Grid.Column="1">
+                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="При этом свободные переменные имеют следующие значения"
                                    Margin="5,5"/>
-                            <DataGrid MinHeight="70">
+                            <DataGrid MinHeight="70" ItemsSource="{Binding FreeVariables}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Имя переменной"/>
-                                    <DataGridTextColumn Header="Значение" Width="*"/>
+                                    <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}"/>
+                                    <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Name}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
-                        </StackPanel>
+                        </DockPanel>
                     </Grid>
                 </Grid>
 
