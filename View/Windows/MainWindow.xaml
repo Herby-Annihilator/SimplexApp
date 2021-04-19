@@ -81,9 +81,8 @@
                     <DockPanel Margin="5,0">
                         <TextBox MinWidth="300" Margin="0,0,5,0" Text="{Binding TargetFunctionCoefficients, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="→" Margin="5,0,0,0" Width="15"/>
-                        <ComboBox MinWidth="50" HorizontalAlignment="Right" SelectedItem="{Binding SelectedOptimalityCriterion, Converter={converters:OptimalityCriterionToComboBoxItemConverter}}">
-                            <ComboBoxItem Content="Max"/>
-                            <ComboBoxItem Content="Min"/>
+                        <ComboBox MinWidth="50" HorizontalAlignment="Right" SelectedItem="{Binding SelectedOptimalityCriterion, Mode=TwoWay}"
+                                  ItemsSource="{Binding OptimalityCriterions}">
                         </ComboBox>
                     </DockPanel>
                 </StackPanel>
@@ -95,7 +94,7 @@
                     </WrapPanel.Resources>
                     <Button Content="Добавить уравнение" Command="{Binding AddNewEquationCommand}"/>
                     <Button Content="Удалить уравнение" Command="{Binding DeleteSelectedEquationCommand}"/>
-                    <Button Content="Решить задачу" Margin="20,3"/>
+                    <Button Content="Решить задачу" Margin="20,3" Command="{Binding SolveTaskCommand}"/>
                 </WrapPanel>
             </StackPanel>
             <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" ShowsPreview="False"

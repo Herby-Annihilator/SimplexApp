@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Reference Include="MyLibrary">
-      <HintPath>..\MyLibrary\bin\Debug\netcoreapp3.1\MyLibrary.dll</HintPath>
+      <HintPath>D:\GarbageCan\Projects\VisualStudio\Semester_5\Algorithms\MyLibrary\bin\Debug\netcoreapp3.1\MyLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 

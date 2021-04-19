@@ -13,6 +13,7 @@ namespace SimplexApp.Model.Services
 			string[] numbersStr = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 			if (numbersStr != null)
 			{
+				numbers = new double[numbersStr.Length];
 				for (int i = 0; i < numbersStr.Length; i++)
 				{
 					try

@@ -11,6 +11,8 @@ using System.Collections.ObjectModel;
 using SimplexApp.Model.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MyLibrary.Algorithms.Methods.Simplex;
+using MyLibrary.Extensions.ArrayExtensions;
+using System.Linq;
 
 namespace SimplexApp.ViewModels
 {
@@ -25,6 +27,7 @@ namespace SimplexApp.ViewModels
 
 			AddNewEquationCommand = new LambdaCommand(OnAddNewEquationCommandExecuted, CanAddNewEquationCommandExecute);
 			DeleteSelectedEquationCommand = new LambdaCommand(OnDeleteSelectedEquationCommandExecuted, CanDeleteSelectedEquationCommandExecute);
+			SolveTaskCommand = new LambdaCommand(OnSolveTaskCommandExecuted, CanSolveTaskCommandExecute);
 		}
 		#region Properties
 		private string _title = "Title";
@@ -40,12 +43,20 @@ namespace SimplexApp.ViewModels
 		private IOptimalityCriterion _selectedOptimalityCtriterion;
 		public IOptimalityCriterion SelectedOptimalityCriterion { get => _selectedOptimalityCtriterion; set => Set(ref _selectedOptimalityCtriterion, value); }
 
+		public ObservableCollection<IOptimalityCriterion> OptimalityCriterions { get; set; } = new ObservableCollection<IOptimalityCriterion>()
+		{
+			new MaxOptimalityCriterion(),
+			new MinOptimalityCriterion()
+		};
+
 		private string _targetFunctionCoefficients;
 		public string TargetFunctionCoefficients { get => _targetFunctionCoefficients; set => Set(ref _targetFunctionCoefficients, value); }
 
 		private double _targetFunctionOptimalValue;
 		public double TargetFunctionOptimalValue { get => _targetFunctionOptimalValue; set => Set(ref _targetFunctionOptimalValue, value); }
 
+		private string _status;
+		public string Status { get => _status; set => Set(ref _status, value); }
 		#endregion
 
 		#region Commands
@@ -71,8 +82,23 @@ namespace SimplexApp.ViewModels
 		public ICommand SolveTaskCommand { get; }
 		private void OnSolveTaskCommandExecuted(object p)
 		{
-			var stringToDoubleArrayParser = App.Host.Services.GetRequiredService<StringToDoubleArrayParser>();
-			
+			SimplexTable table = PrepareFirstSimplexTable();
+			SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
+			SimplexAnswer answer = simplexMethod.Solve();
+			Status = answer.Status.ToString();
+			FreeVariables.Clear();
+			BasisVariables.Clear();
+			if (answer.Status != AnswerStatus.NoSolutions)
+			{
+				TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
+				for (int i = 0; i < answer.Solutions[0].BasisVariablesIndexes.Length; i++)
+				{
+					if (answer.Solutions[0].BasisVariablesIndexes.Contains(i))
+						BasisVariables.Add(new Variable($"X{i}", answer.Solutions[0].OptimalCoefficients[i]));
+					else
+						FreeVariables.Add(new Variable($"X{i}", answer.Solutions[0].OptimalCoefficients[answer.Solutions[0].BasisVariablesIndexes[i]]));
+				}
+			}
 		}
 		private bool CanSolveTaskCommandExecute(object p)
 		{
@@ -81,8 +107,43 @@ namespace SimplexApp.ViewModels
 				if (equation.SelectedSign == null || string.IsNullOrWhiteSpace(equation.Coefficients))
 					return false;
 			}
+			if (string.IsNullOrWhiteSpace(TargetFunctionCoefficients) || SelectedOptimalityCriterion == null)
+				return false;
 			return true;
 		}
+
 		#endregion
+
+		private SimplexTable PrepareFirstSimplexTable()
+		{
+			var parser = App.Host.Services.GetRequiredService<StringToDoubleArrayParser>();
+			int size = Equations.Count + parser.Parse(Equations[0].Coefficients).Length;
+			double[][] matrix = new double[size][];
+			double[] matrixStr;
+			double[] freeMemebers = new double[size];
+			int[] basis = new int[Equations.Count];
+			int basisVariableIndex = size - Equations.Count;
+			for (int i = 0; i < Equations.Count; i++)
+			{
+				matrixStr = new double[size];
+				parser.Parse(Equations[i].Coefficients).CopyTo(matrixStr, 0);
+				if (Equations[i].SelectedSign.ToString() == "<=")
+					matrixStr[basisVariableIndex] = 1;
+				else
+					matrixStr[basisVariableIndex] = -1;
+				basis[i] = basisVariableIndex;
+				basisVariableIndex += 1;
+				matrix[i] = matrixStr;
+				freeMemebers[i] = Equations[i].RightPart;
+			}
+			for (int i = Equations.Count; i < size; i++)
+			{
+				matrix[i] = new double[size];
+			}
+			matrixStr = parser.Parse(TargetFunctionCoefficients).Map((element) => (-1) * element);
+			SimplexTable table = new SimplexTable(matrix, freeMemebers, basis, matrixStr);
+			return table;
+		}
+		
 	}
 }

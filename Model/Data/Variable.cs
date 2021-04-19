@@ -8,5 +8,10 @@ namespace SimplexApp.Model.Data
 	{
 		public string Name { get; set; }
 		public double Value { get; set; }
+		public Variable(string name, double value)
+		{
+			Value = value;
+			Name = name;
+		}
 	}
 }
