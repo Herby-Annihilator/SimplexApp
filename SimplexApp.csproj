@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="D:\GarbageCan\Projects\VisualStudio\Semester_5\Algorithms\MyLibrary\MyLibrary.csproj" />
+    <Reference Include="MyLibrary">
+      <HintPath>..\MyLibrary\bin\Debug\netcoreapp3.1\MyLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

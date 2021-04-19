@@ -8,6 +8,9 @@ using System.Windows.Markup;
 using SimplexApp.Model.Data;
 using SimplexApp.Model.Services;
 using System.Collections.ObjectModel;
+using SimplexApp.Model.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using MyLibrary.Algorithms.Methods.Simplex;
 
 namespace SimplexApp.ViewModels
 {
@@ -33,6 +36,16 @@ namespace SimplexApp.ViewModels
 
 		private Equation _selectedEquation;
 		public Equation SelectedEquation { get => _selectedEquation; set => Set(ref _selectedEquation, value); }
+
+		private IOptimalityCriterion _selectedOptimalityCtriterion;
+		public IOptimalityCriterion SelectedOptimalityCriterion { get => _selectedOptimalityCtriterion; set => Set(ref _selectedOptimalityCtriterion, value); }
+
+		private string _targetFunctionCoefficients;
+		public string TargetFunctionCoefficients { get => _targetFunctionCoefficients; set => Set(ref _targetFunctionCoefficients, value); }
+
+		private double _targetFunctionOptimalValue;
+		public double TargetFunctionOptimalValue { get => _targetFunctionOptimalValue; set => Set(ref _targetFunctionOptimalValue, value); }
+
 		#endregion
 
 		#region Commands
@@ -54,6 +67,22 @@ namespace SimplexApp.ViewModels
 			}
 		}
 		private bool CanDeleteSelectedEquationCommandExecute(object p) => !(SelectedEquation is null);
+
+		public ICommand SolveTaskCommand { get; }
+		private void OnSolveTaskCommandExecuted(object p)
+		{
+			var stringToDoubleArrayParser = App.Host.Services.GetRequiredService<StringToDoubleArrayParser>();
+			
+		}
+		private bool CanSolveTaskCommandExecute(object p)
+		{
+			foreach (var equation in Equations)
+			{
+				if (equation.SelectedSign == null || string.IsNullOrWhiteSpace(equation.Coefficients))
+					return false;
+			}
+			return true;
+		}
 		#endregion
 	}
 }
