@@ -130,7 +130,7 @@
                             <DataGrid MinHeight="70" ItemsSource="{Binding FreeVariables}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}"/>
-                                    <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Name}"/>
+                                    <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Value}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </DockPanel>

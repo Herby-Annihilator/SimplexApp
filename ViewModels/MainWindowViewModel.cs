@@ -90,14 +90,18 @@ namespace SimplexApp.ViewModels
 			BasisVariables.Clear();
 			if (answer.Status != AnswerStatus.NoSolutions)
 			{
-				TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
-				for (int i = 0; i < answer.Solutions[0].BasisVariablesIndexes.Length; i++)
+				for (int i = 0; i < answer.Solutions[0].OptimalCoefficients.Length; i++)
 				{
-					if (answer.Solutions[0].BasisVariablesIndexes.Contains(i))
-						BasisVariables.Add(new Variable($"X{i}", answer.Solutions[0].OptimalCoefficients[i]));
+					if (answer.Solutions[0].BasisIndexes.Contains(i))
+					{
+						BasisVariables.Add(new Variable($"X{i + 1}", answer.Solutions[0].OptimalCoefficients[i]));
+					}
 					else
-						FreeVariables.Add(new Variable($"X{i}", answer.Solutions[0].OptimalCoefficients[answer.Solutions[0].BasisVariablesIndexes[i]]));
+					{
+						FreeVariables.Add(new Variable($"X{i + 1}", answer.Solutions[0].OptimalCoefficients[i]));
+					}
 				}
+				TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
 			}
 		}
 		private bool CanSolveTaskCommandExecute(object p)
