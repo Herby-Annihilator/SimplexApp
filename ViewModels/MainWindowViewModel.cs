@@ -123,24 +123,37 @@ namespace SimplexApp.ViewModels
 			double[] freeMemebers = new double[size];
 			int[] basis = new int[Equations.Count];
 			int basisVariableIndex = size - Equations.Count;
-			for (int i = 0; i < Equations.Count; i++)
-			{
-				matrixStr = new double[size];
-				parser.Parse(Equations[i].Coefficients).CopyTo(matrixStr, 0);
-				if (Equations[i].SelectedSign.ToString() == "<=")
-					matrixStr[basisVariableIndex] = 1;
-				else
-					matrixStr[basisVariableIndex] = -1;
-				basis[i] = basisVariableIndex;
-				basisVariableIndex += 1;
-				matrix[i] = matrixStr;
-				freeMemebers[i] = Equations[i].RightPart;
-			}
-			for (int i = Equations.Count; i < size; i++)
+			int currentEquation = 0;
+
+			for (int i = 0; i < size; i++)
 			{
 				matrix[i] = new double[size];
+				if (i != basisVariableIndex)
+				{
+					for (int j = 0; j < size; j++)
+					{
+						if (i == j)
+							matrix[i][j] = 1;
+						else
+							matrix[i][j] = 0;
+					}
+					freeMemebers[i] = 0;
+				}
+				else
+				{
+					parser.Parse(Equations[currentEquation].Coefficients).CopyTo(matrix[basisVariableIndex], 0);
+					if (Equations[currentEquation].SelectedSign.ToString() == "<=")
+						matrix[basisVariableIndex][basisVariableIndex] = 1;
+					else
+						matrix[basisVariableIndex][basisVariableIndex] = -1;
+					freeMemebers[basisVariableIndex] = Equations[currentEquation].RightPart;
+					basis[currentEquation] = basisVariableIndex;
+					basisVariableIndex++;
+					currentEquation++;
+				}
 			}
-			matrixStr = parser.Parse(TargetFunctionCoefficients).Map((element) => (-1) * element);
+			matrixStr = new double[size];
+			parser.Parse(TargetFunctionCoefficients).Map((element) => (-1) * element).CopyTo(matrixStr, 0);
 			SimplexTable table = new SimplexTable(matrix, freeMemebers, basis, matrixStr);
 			return table;
 		}
