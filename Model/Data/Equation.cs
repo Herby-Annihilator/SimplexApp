@@ -18,13 +18,10 @@ namespace SimplexApp.Model.Data
 		{
 			Signs = new List<Sign>()
 			{
-				new EqualSign(),
 				new MoreThanOrEqual(),
-				new MoreThanSign(),
-				new LessThanOrEqual(),
-				new LessThanSign()
+				new LessThanOrEqual(),				
 			};
-			SelectedSign = new EqualSign();
+			SelectedSign = new MoreThanOrEqual();
 			ID = id;
 		}
 
