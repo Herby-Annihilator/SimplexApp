@@ -55,11 +55,11 @@ namespace SimplexApp.Model.Data
 
 	public class MoreThanOrEqual : Sign
 	{
-		public override string ToString() => ">=";
+		public override string ToString() => "≥";
 	}
 
 	public class LessThanOrEqual : Sign
 	{
-		public override string ToString() => "<=";
+		public override string ToString() => "≤";
 	}
 }

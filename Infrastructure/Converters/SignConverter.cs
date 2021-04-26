@@ -19,10 +19,10 @@ namespace SimplexApp.Infrastructure.Converters
 		{
 			return (value as string) switch
 			{
-				">=" => new MoreThanOrEqual(),
+				"≥" => new MoreThanOrEqual(),
 				">" => new MoreThanSign(),
 				"<" => new LessThanSign(),
-				"<=" => new LessThanOrEqual(),
+				"≤" => new LessThanOrEqual(),
 				"=" => new EqualSign(),
 				_ => new EqualSign()
 			};

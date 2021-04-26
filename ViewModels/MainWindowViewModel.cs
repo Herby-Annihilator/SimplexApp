@@ -101,17 +101,17 @@ namespace SimplexApp.ViewModels
 				HeightOfTheRowWithAlternativeSolutions = 0;
 				if (answer.Status == AnswerStatus.TargetFunctionUnlimited)
 					Status = "Функция не ограничена";
-				else if (answer.Status == AnswerStatus.SeveralSolutions)
+				else if (answer.Status == AnswerStatus.OneSolution || answer.Status == AnswerStatus.SeveralSolutions)
 				{
-					Status = "Найдены альтернативные оптимумы";
-					HeightOfTheRowWithAlternativeSolutions = 100;
-					foreach(var commonVariable in answer.CommonVariableValues)
+					if (answer.Status == AnswerStatus.SeveralSolutions)
 					{
-						CommonVariables.Add(commonVariable);
+						Status = "Найдены альтернативные оптимумы";
+						HeightOfTheRowWithAlternativeSolutions = 200;
+						foreach (var commonVariable in answer.CommonVariableValues)
+						{
+							CommonVariables.Add(commonVariable);
+						}
 					}
-				}
-				else if (answer.Status == AnswerStatus.OneSolution)
-				{
 					for (int i = 0; i < answer.Solutions[0].OptimalCoefficients.Length; i++)
 					{
 						if (answer.Solutions[0].BasisIndexes.Contains(i))
@@ -137,6 +137,8 @@ namespace SimplexApp.ViewModels
 		}
 		private bool CanSolveTaskCommandExecute(object p)
 		{
+			if (Equations.Count == 0)
+				return false;
 			foreach (var equation in Equations)
 			{
 				if (equation.SelectedSign == null || string.IsNullOrWhiteSpace(equation.Coefficients))
@@ -157,11 +159,11 @@ namespace SimplexApp.ViewModels
 			MyLibrary.Algorithms.Methods.Simplex.SimplexData.Sign currentSign;
 			for (int i = 0; i < Equations.Count; i++)
 			{
-				if (Equations[i].SelectedSign.ToString() == "<=")
+				if (Equations[i].SelectedSign.ToString() == "≤")
 				{
 					currentSign = MyLibrary.Algorithms.Methods.Simplex.SimplexData.Sign.LessThanOrEqualSign;
 				}
-				else if (Equations[i].SelectedSign.ToString() == ">=")
+				else if (Equations[i].SelectedSign.ToString() == "≥")
 				{
 					currentSign = MyLibrary.Algorithms.Methods.Simplex.SimplexData.Sign.MoreThanOrEqualSign;
 				}
