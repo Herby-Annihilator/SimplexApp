@@ -123,7 +123,7 @@ namespace SimplexApp.ViewModels
 							FreeVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
 						}
 					}
-					TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
+					TargetFunctionOptimalValue = Math.Round(answer.Solutions[0].OptimalValue, 5);
 				}
 				else
 				{
