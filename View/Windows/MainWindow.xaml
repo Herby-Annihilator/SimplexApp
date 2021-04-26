@@ -6,7 +6,7 @@
         xmlns:converters="clr-namespace:SimplexApp.Infrastructure.Converters"
         xmlns:local="clr-namespace:SimplexApp"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="450" Width="800"
+        Title="{Binding Title}" Height="465" Width="835"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}">
     <Window.Resources>
         <Style TargetType="DataGrid">
@@ -26,7 +26,7 @@
             <MenuItem Header="Помощь"/>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem Content="Binding"/>
+            <StatusBarItem Content="{Binding Status}"/>
         </StatusBar>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -81,7 +81,7 @@
                     <DockPanel Margin="5,0">
                         <TextBox MinWidth="300" Margin="0,0,5,0" Text="{Binding TargetFunctionCoefficients, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="→" Margin="5,0,0,0" Width="15"/>
-                        <ComboBox MinWidth="50" HorizontalAlignment="Right" SelectedItem="{Binding SelectedOptimalityCriterion, Mode=TwoWay}"
+                        <ComboBox Width="60" SelectedItem="{Binding SelectedOptimalityCriterion, Mode=TwoWay}"
                                   ItemsSource="{Binding OptimalityCriterions}">
                         </ComboBox>
                     </DockPanel>
@@ -104,6 +104,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
                         <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="{Binding HeightOfTheRowWithAlternativeSolutions}"/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0">
                         <TextBlock TextWrapping="Wrap" Text="Оптимальное значение функции = " Margin="5,0"/>
@@ -135,6 +137,16 @@
                             </DataGrid>
                         </DockPanel>
                     </Grid>
+                    <GridSplitter Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                    <DockPanel Grid.Row="3">
+                        <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="5" Text="Найдены альтернативные оптимумы. Ниже представлены формулы, по которым можно расчитать значения каждой переменной из системы ограничений. Коэффициент α принимает значения от 0 до 1"/>
+                        <DataGrid ItemsSource="{Binding CommonVariables}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Формула для расчета (α от 0 до 1)" Width="*" Binding="{Binding Value}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
                 </Grid>
 
             </GroupBox>

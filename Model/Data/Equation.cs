@@ -19,7 +19,8 @@ namespace SimplexApp.Model.Data
 			Signs = new List<Sign>()
 			{
 				new MoreThanOrEqual(),
-				new LessThanOrEqual(),				
+				new LessThanOrEqual(),
+				new EqualSign()
 			};
 			SelectedSign = new MoreThanOrEqual();
 			ID = id;

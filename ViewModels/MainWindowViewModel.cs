@@ -25,6 +25,7 @@ namespace SimplexApp.ViewModels
 			BasisVariables = new ObservableCollection<Variable>();
 			FreeVariables = new ObservableCollection<Variable>();
 			Equations = new ObservableCollection<Equation>();
+			CommonVariables = new ObservableCollection<CommonVariableValue>();
 
 			AddNewEquationCommand = new LambdaCommand(OnAddNewEquationCommandExecuted, CanAddNewEquationCommandExecute);
 			DeleteSelectedEquationCommand = new LambdaCommand(OnDeleteSelectedEquationCommandExecuted, CanDeleteSelectedEquationCommandExecute);
@@ -37,6 +38,7 @@ namespace SimplexApp.ViewModels
 		public ObservableCollection<Variable> BasisVariables { get; set; }
 		public ObservableCollection<Variable> FreeVariables { get; set; }
 		public ObservableCollection<Equation> Equations { get; set; }
+		public ObservableCollection<CommonVariableValue> CommonVariables { get; set; }
 
 		private Equation _selectedEquation;
 		public Equation SelectedEquation { get => _selectedEquation; set => Set(ref _selectedEquation, value); }
@@ -56,8 +58,11 @@ namespace SimplexApp.ViewModels
 		private double _targetFunctionOptimalValue;
 		public double TargetFunctionOptimalValue { get => _targetFunctionOptimalValue; set => Set(ref _targetFunctionOptimalValue, value); }
 
-		private string _status;
+		private string _status = "Решаю все";
 		public string Status { get => _status; set => Set(ref _status, value); }
+
+		private double heightOfTheRowWithAlternativeSolutions;
+		public double HeightOfTheRowWithAlternativeSolutions { get => heightOfTheRowWithAlternativeSolutions; set => Set(ref heightOfTheRowWithAlternativeSolutions, value); }
 		#endregion
 
 		#region Commands
@@ -83,27 +88,52 @@ namespace SimplexApp.ViewModels
 		public ICommand SolveTaskCommand { get; }
 		private void OnSolveTaskCommandExecuted(object p)
 		{
-			SimplexTable table = PrepareFirstSimplexTable();
-			SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
-			SimplexAnswer answer = simplexMethod.Solve();
-			Status = answer.Status.ToString();
-			FreeVariables.Clear();
-			BasisVariables.Clear();
-			if (answer.Status != AnswerStatus.NoSolutions)
+			try
 			{
-				for (int i = 0; i < answer.Solutions[0].OptimalCoefficients.Length; i++)
+				SimplexTable table = PrepareFirstSimplexTable();
+				SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
+				SimplexAnswer answer = simplexMethod.Solve();
+				Status = answer.Status.ToString();
+				FreeVariables.Clear();
+				BasisVariables.Clear();
+				CommonVariables.Clear();
+				TargetFunctionOptimalValue = 0;
+				HeightOfTheRowWithAlternativeSolutions = 0;
+				if (answer.Status == AnswerStatus.TargetFunctionUnlimited)
+					Status = "Функция не ограничена";
+				else if (answer.Status == AnswerStatus.SeveralSolutions)
 				{
-					if (answer.Solutions[0].BasisIndexes.Contains(i))
+					Status = "Найдены альтернативные оптимумы";
+					HeightOfTheRowWithAlternativeSolutions = 100;
+					foreach(var commonVariable in answer.CommonVariableValues)
 					{
-						BasisVariables.Add(new Variable($"X{i + 1}", answer.Solutions[0].OptimalCoefficients[i]));
-					}
-					else
-					{
-						FreeVariables.Add(new Variable($"X{i + 1}", answer.Solutions[0].OptimalCoefficients[i]));
+						CommonVariables.Add(commonVariable);
 					}
 				}
-				TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
+				else if (answer.Status == AnswerStatus.OneSolution)
+				{
+					for (int i = 0; i < answer.Solutions[0].OptimalCoefficients.Length; i++)
+					{
+						if (answer.Solutions[0].BasisIndexes.Contains(i))
+						{
+							BasisVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
+						}
+						else
+						{
+							FreeVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
+						}
+					}
+					TargetFunctionOptimalValue = answer.Solutions[0].OptimalValue;
+				}
+				else
+				{
+					Status = "Решений нет";
+				}
 			}
+			catch (Exception e)
+			{
+				Status = "Не удалось выполнить команду. Причина - " + e.Message;
+			}		
 		}
 		private bool CanSolveTaskCommandExecute(object p)
 		{
