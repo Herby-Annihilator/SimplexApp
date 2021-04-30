@@ -11,6 +11,7 @@ namespace SimplexApp.Model.Services
 		{
 			services.AddTransient<StringToDoubleArrayParser>();
 			services.AddTransient<StringToDoubleListParser>();
+			services.AddSingleton<ExampleFromFileService>();
 			return;
 		}
 	}

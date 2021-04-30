@@ -23,7 +23,7 @@ namespace SimplexApp.ViewModels
 		public MainWindowViewModel()
 		{
 			BasisVariables = new ObservableCollection<Variable>();
-			FreeVariables = new ObservableCollection<Variable>();
+			StartVariables = new ObservableCollection<Variable>();
 			Equations = new ObservableCollection<Equation>();
 			CommonVariables = new ObservableCollection<CommonVariableValue>();
 
@@ -36,7 +36,7 @@ namespace SimplexApp.ViewModels
 		public string Title { get => _title; set => Set(ref _title, value); }
 
 		public ObservableCollection<Variable> BasisVariables { get; set; }
-		public ObservableCollection<Variable> FreeVariables { get; set; }
+		public ObservableCollection<Variable> StartVariables { get; set; }
 		public ObservableCollection<Equation> Equations { get; set; }
 		public ObservableCollection<CommonVariableValue> CommonVariables { get; set; }
 
@@ -94,7 +94,7 @@ namespace SimplexApp.ViewModels
 				SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
 				SimplexAnswer answer = simplexMethod.Solve();
 				Status = answer.Status.ToString();
-				FreeVariables.Clear();
+				StartVariables.Clear();
 				BasisVariables.Clear();
 				CommonVariables.Clear();
 				TargetFunctionOptimalValue = 0;
@@ -118,10 +118,7 @@ namespace SimplexApp.ViewModels
 						{
 							BasisVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
 						}
-						else
-						{
-							FreeVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
-						}
+						StartVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
 					}
 					TargetFunctionOptimalValue = Math.Round(answer.Solutions[0].OptimalValue, 5);
 				}

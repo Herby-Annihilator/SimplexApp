@@ -79,7 +79,8 @@
                 <StackPanel>
                     <TextBlock TextWrapping="Wrap" Text="Функция цели" Margin="5,0"/>
                     <DockPanel Margin="5,0">
-                        <TextBox MinWidth="300" Margin="0,0,5,0" Text="{Binding TargetFunctionCoefficients, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox MinWidth="250" Margin="0,0,5,0" Text="{Binding TargetFunctionCoefficients, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox MinWidth="45"/>
                         <TextBlock Text="→" Margin="5,0,0,0" Width="15"/>
                         <ComboBox Width="60" SelectedItem="{Binding SelectedOptimalityCriterion, Mode=TwoWay}"
                                   ItemsSource="{Binding OptimalityCriterions}">
@@ -117,9 +118,9 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="Которое достигается при следующих значениях базисных переменных" TextWrapping="Wrap"
+                            <TextBlock DockPanel.Dock="Top" Text="Которое достигается при следующих значениях изначальных переменных" TextWrapping="Wrap"
                                    Margin="5, 5"/>
-                            <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" MinHeight="70" IsReadOnly="True" ItemsSource="{Binding BasisVariables}">
+                            <DataGrid ScrollViewer.HorizontalScrollBarVisibility="Auto" MinHeight="70" IsReadOnly="True" ItemsSource="{Binding StartVariables}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Имя переменной" Binding="{Binding Path=Name}"/>
                                     <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Value}"/>
@@ -127,9 +128,9 @@
                             </DataGrid>
                         </DockPanel>
                         <DockPanel Grid.Column="1">
-                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="При этом свободные переменные имеют следующие значения"
+                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="При этом, в ходе решения образовался так называемый базис:"
                                    Margin="5,5"/>
-                            <DataGrid MinHeight="70" ItemsSource="{Binding FreeVariables}">
+                            <DataGrid MinHeight="70" ItemsSource="{Binding BasisVariables}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}"/>
                                     <DataGridTextColumn Header="Значение" Width="*" Binding="{Binding Value}"/>
@@ -140,7 +141,7 @@
                     <GridSplitter Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
                     <DockPanel Grid.Row="3">
                         <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Margin="5" Text="Найдены альтернативные оптимумы. Ниже представлены формулы, по которым можно расчитать значения каждой переменной из системы ограничений. Коэффициент α принимает значения от 0 до 1"/>
-                        <DataGrid ItemsSource="{Binding CommonVariables}">
+                        <DataGrid ItemsSource="{Binding CommonVariables}" MinHeight="{Binding HeightOfTheRowWithAlternativeSolutions}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}"/>
                                 <DataGridTextColumn Header="Формула для расчета (α от 0 до 1)" Width="*" Binding="{Binding Value}"/>
