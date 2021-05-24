@@ -9,5 +9,11 @@ namespace SimplexApp.Model.Data
 	{
 		public List<Equation> Equations { get; set; }
 		public TargetFunction TargetFunction { get; set; }
+
+		public Example(List<Equation> equations, TargetFunction targetFunction)
+		{
+			Equations = equations;
+			TargetFunction = targetFunction;
+		}
 	}
 }
