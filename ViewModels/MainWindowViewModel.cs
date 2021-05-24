@@ -14,14 +14,18 @@ using MyLibrary.Algorithms.Methods.Simplex;
 using MyLibrary.Extensions.ArrayExtensions;
 using MyLibrary.Algorithms.Methods.Simplex.SimplexData;
 using System.Linq;
+using System.IO;
+using SimplexApp.Model.Extensions;
 
 namespace SimplexApp.ViewModels
 {
 	[MarkupExtensionReturnType(typeof(MainWindowViewModel))]
 	public class MainWindowViewModel : ViewModel
 	{
+		private ServiceLocator _serviceLocator;
 		public MainWindowViewModel()
 		{
+			_serviceLocator = new ServiceLocator();
 			BasisVariables = new ObservableCollection<Variable>();
 			StartVariables = new ObservableCollection<Variable>();
 			Equations = new ObservableCollection<Equation>();
@@ -30,6 +34,8 @@ namespace SimplexApp.ViewModels
 			AddNewEquationCommand = new LambdaCommand(OnAddNewEquationCommandExecuted, CanAddNewEquationCommandExecute);
 			DeleteSelectedEquationCommand = new LambdaCommand(OnDeleteSelectedEquationCommandExecuted, CanDeleteSelectedEquationCommandExecute);
 			SolveTaskCommand = new LambdaCommand(OnSolveTaskCommandExecuted, CanSolveTaskCommandExecute);
+
+			ExampleFromFileCommand = new LambdaCommand(OnExampleFromFileCommandExecuted, CanExampleFromFileCommandExecute);
 		}
 		#region Properties
 		private string _title = "Title";
@@ -63,6 +69,12 @@ namespace SimplexApp.ViewModels
 
 		private double heightOfTheRowWithAlternativeSolutions;
 		public double HeightOfTheRowWithAlternativeSolutions { get => heightOfTheRowWithAlternativeSolutions; set => Set(ref heightOfTheRowWithAlternativeSolutions, value); }
+
+		private string _targetFunctionFreeCoef;
+		public string TargetFunctionFreeCoef { get => _targetFunctionFreeCoef; set => Set(ref _targetFunctionFreeCoef, value); }
+
+		private string _fileName = "example.txt";
+		public string FileName { get => _fileName; set => Set(ref _fileName, value); }
 		#endregion
 
 		#region Commands
@@ -90,14 +102,15 @@ namespace SimplexApp.ViewModels
 		{
 			try
 			{
-				SimplexTable table = PrepareFirstSimplexTable();
-				SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
-				SimplexAnswer answer = simplexMethod.Solve();
-				Status = answer.Status.ToString();
 				StartVariables.Clear();
 				BasisVariables.Clear();
 				CommonVariables.Clear();
 				TargetFunctionOptimalValue = 0;
+				SimplexTable table = PrepareFirstSimplexTable();
+				
+				SimplexMethod simplexMethod = new SimplexMethod(table, SelectedOptimalityCriterion);
+				SimplexAnswer answer = simplexMethod.Solve();
+				Status = answer.Status.ToString();				
 				HeightOfTheRowWithAlternativeSolutions = 0;
 				if (answer.Status == AnswerStatus.TargetFunctionUnlimited)
 					Status = "Функция не ограничена";
@@ -143,9 +156,36 @@ namespace SimplexApp.ViewModels
 			}
 			if (string.IsNullOrWhiteSpace(TargetFunctionCoefficients) || SelectedOptimalityCriterion == null)
 				return false;
+			if (!double.TryParse(TargetFunctionFreeCoef, out double number))
+				return false;
 			return true;
 		}
 
+
+		public ICommand ExampleFromFileCommand { get; }
+		private void OnExampleFromFileCommandExecuted(object p)
+		{
+			try
+			{
+				ExampleFromFileService service = _serviceLocator.ExampleFromFileService;
+				Example example = service.GetExample(FileName);
+				Equations.Clear();
+				SelectedEquation = null;
+				SelectedOptimalityCriterion = example.TargetFunction.OptimalityCriterion;
+				TargetFunctionCoefficients = example.TargetFunction.Coefficients.GetEqualString();
+				TargetFunctionFreeCoef = example.TargetFunction.FreeCoefficient.ToString();
+				for (int i = 0; i < example.Equations.Count; i++)
+				{
+					Equations.Add(example.Equations[i]);
+					Equations[i].OnPropertyChanged("SelectedSign");
+				}
+			}
+			catch(Exception e)
+			{
+				Status = $"Операция не выполнена. Причина {e.Message}";
+			}
+		}
+		private bool CanExampleFromFileCommandExecute(object p) => File.Exists(FileName);
 		#endregion
 
 		private SimplexTable PrepareFirstSimplexTable()
@@ -171,7 +211,7 @@ namespace SimplexApp.ViewModels
 				inequality = new Inequality(parser.Parse(Equations[i].Coefficients), Equations[i].RightPart, currentSign);
 				inequalities.Add(inequality);
 			}
-			TargetFunction targetFunction = new TargetFunction(parser.Parse(TargetFunctionCoefficients), SelectedOptimalityCriterion);;
+			TargetFunction targetFunction = new TargetFunction(parser.Parse(TargetFunctionCoefficients), SelectedOptimalityCriterion, Convert.ToDouble(TargetFunctionFreeCoef));
 			return SimplexMethod.PrepareFirstSimplexTable(inequalities, targetFunction);
 		}
 		

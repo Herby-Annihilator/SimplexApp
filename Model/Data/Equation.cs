@@ -34,8 +34,13 @@ namespace SimplexApp.Model.Data
 		}
 	}
 
-	public abstract class Sign
+	public abstract class Sign : INotifyPropertyChanged
 	{
+		public event PropertyChangedEventHandler PropertyChanged;
+		public void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 
 	public class EqualSign : Sign

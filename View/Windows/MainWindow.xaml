@@ -6,7 +6,7 @@
         xmlns:converters="clr-namespace:SimplexApp.Infrastructure.Converters"
         xmlns:local="clr-namespace:SimplexApp"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="465" Width="835"
+        Title="{Binding Title}" Height="493" Width="835"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}">
     <Window.Resources>
         <Style TargetType="DataGrid">
@@ -80,7 +80,7 @@
                     <TextBlock TextWrapping="Wrap" Text="Функция цели" Margin="5,0"/>
                     <DockPanel Margin="5,0">
                         <TextBox MinWidth="250" Margin="0,0,5,0" Text="{Binding TargetFunctionCoefficients, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBox MinWidth="45"/>
+                        <TextBox MinWidth="45" Text="{Binding TargetFunctionFreeCoef, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="→" Margin="5,0,0,0" Width="15"/>
                         <ComboBox Width="60" SelectedItem="{Binding SelectedOptimalityCriterion, Mode=TwoWay}"
                                   ItemsSource="{Binding OptimalityCriterions}">
@@ -96,6 +96,10 @@
                     <Button Content="Добавить уравнение" Command="{Binding AddNewEquationCommand}"/>
                     <Button Content="Удалить уравнение" Command="{Binding DeleteSelectedEquationCommand}"/>
                     <Button Content="Решить задачу" Margin="20,3" Command="{Binding SolveTaskCommand}"/>
+                </WrapPanel>
+                <WrapPanel Margin="5,0">
+                    <Button Content="Пример из файла" Command="{Binding ExampleFromFileCommand}"/>
+                    <TextBox Margin="7,0" Width="270" Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged}"/>
                 </WrapPanel>
             </StackPanel>
             <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" ShowsPreview="False"
