@@ -131,7 +131,8 @@ namespace SimplexApp.ViewModels
 						{
 							BasisVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
 						}
-						StartVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
+						if (answer.Solutions[0].StartIndexes.Contains(i))
+							StartVariables.Add(new Variable($"X{i + 1}", Math.Round(answer.Solutions[0].OptimalCoefficients[i], 5)));
 					}
 					TargetFunctionOptimalValue = Math.Round(answer.Solutions[0].OptimalValue, 5);
 				}
